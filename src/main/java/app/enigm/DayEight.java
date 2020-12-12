@@ -52,7 +52,7 @@ public class DayEight {
             lineRead.add(i);
             String instruction = puzzle.get(i).split(" ")[0];
             Integer code = Integer.valueOf(puzzle.get(i).split(" ")[1]);
-            if()
+
             System.out.println("Current line = " + puzzle.get(i));
             switch (instruction) {
                 case "nop":
