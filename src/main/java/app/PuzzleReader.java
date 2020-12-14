@@ -14,7 +14,7 @@ public class PuzzleReader {
     public static List<String> readPuzzle() throws URISyntaxException, IOException {
         List<String> puzzleLines = new ArrayList<String>();
 
-        Path path = Paths.get(PuzzleReader.class.getClassLoader().getResource("input.txt").toURI());
+        Path path = Paths.get(PuzzleReader.class.getClassLoader().getResource("input7.txt").toURI());
         puzzleLines = FileUtils.readLines(path.toFile(), "UTF-8");
 
         return puzzleLines;

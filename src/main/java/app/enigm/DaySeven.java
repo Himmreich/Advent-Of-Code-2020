@@ -15,11 +15,78 @@ public class DaySeven {
     static class Rule {
         String color;
         Map<String, Integer> container = new HashMap<>();
-        boolean isLeaf;
-        boolean containsColor = false;
     }
 
     public static int resolverPartOne(List<String> puzzle) {
+        List<Rule> rules = new ArrayList<>();
+        for(String line : puzzle){
+            Rule rule = lineParser(line);
+            rules.add(rule);
+        }
+        List<String> colorsNotConcerned = new ArrayList<>();
+        List<String> colorsConcerned = new ArrayList<>();
+        List<String> colorsNotDefined = new ArrayList<>();
+       for(Rule rule : rules) {
+           if(!rule.getColor().contains(SHINY_GOLD))
+            colorsNotDefined.add(rule.getColor());
+       }
+
+        int i = 0;
+        boolean stop = false;
+        int nbColors = rules.size() - 1;
+        do{
+            Rule rule = rules.get(i);
+
+            //Si ce n'est pas la couleur concernee
+            if(rule.getColor().compareToIgnoreCase(SHINY_GOLD) != 0){
+                //Cas couleur sans enfants
+                if(rule.getContainer().isEmpty()){
+                    if(!colorsNotConcerned.contains(rule.getColor())){
+                        colorsNotConcerned.add(rule.getColor());
+                        colorsNotDefined.remove(rule.getColor());
+                    }
+                }//On ne s'occupe que des enfants
+                else{
+                    int childsNotConcerned = 0;
+                    //Pour chaque mouflet
+                    for (Map.Entry child : rule.container.entrySet()) {
+                        String childColor = (String) child.getKey();
+                        if(!colorsNotConcerned.contains(childColor)){
+                            //Si la couleur est une couleur concernee on ajoute le parent
+                            if(colorsConcerned.contains(childColor)) {
+                                if(!colorsConcerned.contains(rule.getColor())) {
+                                    colorsConcerned.add(rule.getColor());
+                                    colorsNotDefined.remove(rule.getColor());
+                                }
+                            }
+                            //Si la couleur est shiny gold on ajoute a la liste
+                            if(childColor.compareToIgnoreCase(SHINY_GOLD) == 0) {
+                                if(!colorsConcerned.contains(rule.getColor())){
+                                    colorsConcerned.add(rule.getColor());
+                                    colorsNotDefined.remove(rule.getColor());
+                                }
+                            }
+                        } else {
+                            childsNotConcerned++;
+                        }
+                    }
+                    if(childsNotConcerned == rule.container.size()) {
+                        colorsNotConcerned.add(rule.getColor());
+                        colorsNotDefined.remove(rule.getColor());
+                    }
+                }
+            }
+
+            i++;
+            if(i == rules.size())
+                i = 0;
+            if(colorsConcerned.size() + colorsNotConcerned.size() == nbColors && colorsNotDefined.isEmpty())
+                stop = true;
+        }while (!stop);
+        return colorsConcerned.size();
+    }
+
+    public static int resolverPartOne2(List<String> puzzle) {
         int nbColors = 0;
         List<String> isGold = new ArrayList<>();
         List<String> isNotGold = new ArrayList<>();
@@ -67,17 +134,14 @@ public class DaySeven {
         rule.color = line.split(" contain ")[0].replace("bags", "").trim();
 
         if(!line.split(" contain ")[1].contains("no other bags")){
-            rule.isLeaf = false;
             String[] containers = line.split(" contain ")[1].split(",");
             for(String container : containers) {
                 container = container.replace("bags", "").replace("bag", "").replace(".", "").trim();
                 String containerColor = container.substring(container.indexOf(" ")).trim();
-                if(containerColor == SHINY_GOLD)
-                    rule.containsColor = true;
                 Integer number = Integer.valueOf(container.substring(0, container.indexOf(" ")).trim());
                 rule.container.putIfAbsent(containerColor, number);
             }
-        } else rule.isLeaf = true;
+        }
         return rule;
     }
 

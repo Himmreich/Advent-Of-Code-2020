@@ -1,5 +1,6 @@
 package app.enigm;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ public class DaySevenTest extends TestCase {
                 "faded blue bags contain no other bags." ,
                 "dotted black bags contain no other bags.");
         System.out.println("The first result is = " + DaySeven.resolverPartOne(puzzle));
+        Assert.assertEquals(DaySeven.resolverPartOne(puzzle), 4);
     }
 
     public void testResolver2() {
